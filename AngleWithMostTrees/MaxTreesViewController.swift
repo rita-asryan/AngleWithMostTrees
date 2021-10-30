@@ -206,26 +206,29 @@ class MaxTreesViewController: UIViewController {
         if isValidData() {
             let r = Double(distanceTextField?.text ?? "") ?? 0
             var degree = (Double(degreeTextField?.text ?? "") ?? 0)
-            if degree == 360 {
-                degree = 0
-            }
-            print((r, degree))
-            let coordinate = convertPolarToRectangularCoordinates(r: r, degree: degree)
-            let x: CGFloat = CGFloat(coordinate.0)
-            let y: CGFloat = -CGFloat(coordinate.1)
-            let center = CGPoint(x: forestView.bounds.width / 2 + x, y: forestView.bounds.height / 2 + y)
-        
-            if pow(coordinate.0, 2) + pow(coordinate.1, 2) >= pow(100, 2) {
-                showAlertView(text: "Tree is outside of the forest.")
-            } else if (coordinates.firstIndex(of: PolarCoordinate(distance: r, angle: degree)) ?? -1 >= 0) {
-                showAlertView(text: "Tree is already added.")
+            if degree > 360 {
+                showAlertView(text: "The degree couldn't be more than 360")
             } else {
-                coordinates.append(PolarCoordinate(distance: r, angle: degree))
-                distanceTextField.text = ""
-                degreeTextField.text = ""
-                let fillColor = UIColor(red: 30/255, green: 128/255, blue: 46/255, alpha: 1)
-                let shapeLayer = addAngleShapeLayer(center: center, fillColor: fillColor, strokeColor: fillColor)
-                forestView.layer.addSublayer(shapeLayer)
+                if degree == 360 {
+                    degree = 0
+                }
+                let coordinate = convertPolarToRectangularCoordinates(r: r, degree: degree)
+                let x: CGFloat = CGFloat(coordinate.0)
+                let y: CGFloat = -CGFloat(coordinate.1)
+                let center = CGPoint(x: forestView.bounds.width / 2 + x, y: forestView.bounds.height / 2 + y)
+                
+                if pow(coordinate.0, 2) + pow(coordinate.1, 2) >= pow(100, 2) {
+                    showAlertView(text: "Tree is outside of the forest.")
+                } else if (coordinates.firstIndex(of: PolarCoordinate(distance: r, angle: degree)) ?? -1 >= 0) {
+                    showAlertView(text: "Tree is already added.")
+                } else {
+                    coordinates.append(PolarCoordinate(distance: r, angle: degree))
+                    distanceTextField.text = ""
+                    degreeTextField.text = ""
+                    let fillColor = UIColor(red: 30/255, green: 128/255, blue: 46/255, alpha: 1)
+                    let shapeLayer = addAngleShapeLayer(center: center, fillColor: fillColor, strokeColor: fillColor)
+                    forestView.layer.addSublayer(shapeLayer)
+                }
             }
         }
     }
