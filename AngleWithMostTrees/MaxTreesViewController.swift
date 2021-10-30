@@ -96,7 +96,7 @@ class MaxTreesViewController: UIViewController {
         for i in index...m {
             endKey = sortedAngles[j].0 + cameraWidth
             if i < m {
-                if key0 > endKey { //} && endKey > sortedAngles[i].0{
+                if key0 > endKey {
                     sum -= sortedAngles[j].1
                     j += 1
                     key0 = sortedAngles[j].0
@@ -109,7 +109,6 @@ class MaxTreesViewController: UIViewController {
             if i < m {
                 key0 = sortedAngles[i].0
                 sum += sortedAngles[i].1
-//                index += 1
             }
         }
       
@@ -120,15 +119,6 @@ class MaxTreesViewController: UIViewController {
     
     func findAndSortAngles(polorCoordinateTrees: [PolarCoordinate]) -> Array<(Double, Int)> {
         var angles: [Double] = []
-//        for i in 0...polorCoordinateTrees.count - 1 {
-//            if polorCoordinateTrees[i].distance >= 0 && polorCoordinateTrees[i].angle >= 0 {
-//                angles.append(atan(polorCoordinateTrees[i].y / polorCoordinateTrees[i].x) * 180 / .pi)
-//            } else if polorCoordinateTrees[i].x <= 0  {
-//                angles.append(180 + atan(polorCoordinateTrees[i].y / polorCoordinateTrees[i].x) * 180 / .pi)
-//            } else if polorCoordinateTrees[i].x >= 0 && polorCoordinateTrees[i].y <= 0  {
-//                angles.append(360 + atan(polorCoordinateTrees[i].y / polorCoordinateTrees[i].x) * 180 / .pi)
-//            }
-//        }
         for i in 0...polorCoordinateTrees.count - 1 {
             angles.append(polorCoordinateTrees[i].angle)
         }
@@ -155,16 +145,12 @@ class MaxTreesViewController: UIViewController {
         return shapeLayer
     }
     
-    func removeSublayer(_ layer: CAShapeLayer) {
-        layer.removeFromSuperlayer()
-    }
-    
     func isValidData() -> Bool {
         if distanceTextField.text == "" {
-            showAlertView(text: "please fill x coordinate")
+            showAlertView(text: "please fill distance field")
             return false
         } else if degreeTextField.text == "" {
-            showAlertView(text: "please fill y coordinate")
+            showAlertView(text: "please fill degree")
             return false
         }
         return true
@@ -248,7 +234,6 @@ class MaxTreesViewController: UIViewController {
     }
     
     @objc func keyboardWasShow(aNotification: Notification) {
-        
         let kbSize = ((aNotification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue)?.size
         let duration: NSNumber = aNotification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as! NSNumber
         let interval:TimeInterval = duration.doubleValue
@@ -263,7 +248,6 @@ class MaxTreesViewController: UIViewController {
     }
     
     @objc func keyboardWillBeHidden(aNotification: Notification){
-        
         let duration: NSNumber = aNotification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as! NSNumber
         let interval:TimeInterval = duration.doubleValue
         
@@ -298,16 +282,19 @@ extension MaxTreesViewController: UITextFieldDelegate {
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return string == string.filter("0123456789-.".contains)
+        return string == string.filter("0123456789-+.".contains)
     }
 }
 
+
+// CGFloat extension
 extension CGFloat {
     func toRadians() -> CGFloat {
         return self * CGFloat(Double.pi) / 180.0
     }
 }
 
+// UIViewController extension
 extension UIViewController {
     func showAlertView(text: String, message: String = "") {
         let alert = UIAlertController(title: text, message: message, preferredStyle: .alert)
