@@ -62,25 +62,24 @@ class MaxTreesViewController: UIViewController {
         var key0 = sortedAngles[0].0 + cameraWidth
         
         for i in 1..<n {
-            if sortedAngles[i].0 >= key0 {
-                index = i + 1
-                print(i)
+            if sortedAngles[i].0 > key0 {
+                index = i
+                key0 = sortedAngles[i].0
                 break
             }
         }
         
         for i in 0..<index {
             sum += sortedAngles[i].1
-            print(sortedAngles)
         }
         maxSum = sum
         cameraPos = sortedAngles[0].0
         // add cyclic effect
-        var x = sortedAngles[n-1].0 + cameraWidth
+        let x = sortedAngles[n-1].0 + cameraWidth
         for i in 0..<index {
             if x > 360 {
                 if x - 360 > sortedAngles[i].0 {
-                    sortedAngles.append(sortedAngles[i])
+                    sortedAngles.append((sortedAngles[i].0 + 360, sortedAngles[i].1))
                 }
                 else {
                     break
@@ -91,25 +90,29 @@ class MaxTreesViewController: UIViewController {
             }
             
         }
-        print(sortedAngles)
         let m = sortedAngles.count
-        for i in index..<m {
-            if maxSum < sum {
+        var j = 0
+        var endKey = 0.0
+        for i in index...m {
+            endKey = sortedAngles[j].0 + cameraWidth
+            if i < m {
+                if key0 > endKey { //} && endKey > sortedAngles[i].0{
+                    sum -= sortedAngles[j].1
+                    j += 1
+                    key0 = sortedAngles[j].0
+                }
+            }
+            if maxSum <= sum {
                 maxSum = sum
-                cameraPos = sortedAngles[i-index].0
+                cameraPos = sortedAngles[j].0
             }
-            if key0 > sortedAngles[i-index].0 + cameraWidth {
-                key0 -= sortedAngles[i-index].0
-                sum -= sortedAngles[i-index].1
+            if i < m {
+                key0 = sortedAngles[i].0
+                sum += sortedAngles[i].1
+//                index += 1
             }
-            key0 += sortedAngles[i].0
-            sum += sortedAngles[i].1
-            
-            print("key, sum = ", (key0, sum))
-            print(sortedAngles[i-index].0 + cameraWidth)
-            print((i, index))
-            
         }
+      
         cameraAnglePositionLabel.text = "\(cameraPos)"
         treesCountLabel.text = "\(maxSum)"
         return (cameraPos, maxSum)
@@ -208,7 +211,6 @@ class MaxTreesViewController: UIViewController {
             }
             print((r, degree))
             let coordinate = convertPolarToRectangularCoordinates(r: r, degree: degree)
-            print(coordinate)
             let x: CGFloat = CGFloat(coordinate.0)
             let y: CGFloat = -CGFloat(coordinate.1)
             let center = CGPoint(x: forestView.bounds.width / 2 + x, y: forestView.bounds.height / 2 + y)
